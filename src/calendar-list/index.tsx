@@ -101,7 +101,7 @@ class CalendarList extends Component<CalendarListProps, State> {
         /** Enables nested scrolling for Android API level 21+ */
         nestedScrollEnabled: PropTypes.bool,
         /** Can pass additional data to show borders on calendar-list */
-        additionalData: PropTypes.oneOfTyoe([PropTypes.objec, PropTypes.array])
+        additionalData: PropTypes.oneOfType([PropTypes.object, PropTypes.array])
     };
 
     static defaultProps = {
