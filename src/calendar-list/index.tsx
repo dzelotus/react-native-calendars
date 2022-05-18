@@ -99,7 +99,9 @@ class CalendarList extends Component<CalendarListProps, State> {
         /** Called once when the scroll position gets within onEndReachedThreshold */
         onEndReached: PropTypes.func,
         /** Enables nested scrolling for Android API level 21+ */
-        nestedScrollEnabled: PropTypes.bool
+        nestedScrollEnabled: PropTypes.bool,
+        /** Can pass additional data to show borders on calendar-list */
+        additionalData: PropTypes.oneOfTyoe([PropTypes.objec, PropTypes.array])
     };
 
     static defaultProps = {
@@ -292,7 +294,7 @@ class CalendarList extends Component<CalendarListProps, State> {
     };
 
     renderItem = ({ item }: any) => {
-        const { calendarStyle, horizontal, calendarWidth, testID, ...others } = this.props;
+        const { calendarStyle, horizontal, calendarWidth, testID, additionalData, ...others } = this.props;
 
         return (
             <CalendarListItem
@@ -303,7 +305,7 @@ class CalendarList extends Component<CalendarListProps, State> {
                 horizontal={horizontal}
                 calendarWidth={horizontal ? calendarWidth : undefined}
                 scrollToMonth={this.scrollToMonth}
-                additionalData={this.props.additionalData}
+                additionalData={additionalData}
             />
         );
     };
