@@ -30,13 +30,12 @@ type MarkingStyle = {
 }
 
 const PeriodDay = (props: PeriodDayProps) => {
-    const { theme, marking, date, onPress, onLongPress, state, accessibilityLabel, testID, children, additionalData } = props;
+    const { theme, marking, date, onPress, onLongPress, state, accessibilityLabel, testID, children, additionalMarking } = props;
     const dateData = date ? xdateToData(new XDate(date)) : undefined;
     const style = useRef(styleConstructor(theme));
 
     const markingStyle = useMemo(() => {
         const defaultStyle: MarkingStyle = { textStyle: {}, containerStyle: {} };
-
         if (!marking) {
             return defaultStyle;
         } else {
@@ -81,7 +80,7 @@ const PeriodDay = (props: PeriodDayProps) => {
 
         if (marking) {
             containerStyle.push({
-                borderRadius: 17,
+                borderRadius: 19,
                 overflow: 'hidden'
             });
 
@@ -141,13 +140,7 @@ const PeriodDay = (props: PeriodDayProps) => {
         return { leftFillerStyle, rightFillerStyle, fillerStyle };
     }, [marking]);
 
-    const additionalDataStyles = useMemo(() => {
-        const leftBorderFiller: ViewStyle = { borderColor: 'green', borderTopWidth: 1, borderBottomWidth: 1 };
-        const rightBorderFiller: ViewStyle = { borderColor: 'green', borderTopWidth: 1, borderBottomWidth: 1 };
-        const additionalMarkingStyle: ViewStyle = { borderTopRightRadius: 20, borderBottomRightRadius: 20, borderRightWidth: 2 }
 
-        return { leftBorderFiller, rightBorderFiller, additionalMarkingStyle }
-    }, [additionalData])
 
     const renderFillers = () => {
         if (marking) {
@@ -160,17 +153,6 @@ const PeriodDay = (props: PeriodDayProps) => {
         }
     };
 
-    const renderAdditionalDataBorders = () => {
-        if (additionalData) {
-            return (
-                <View style={[style.current.fillers]}>
-                    <View style={[style.current.leftFiller, additionalDataStyles.leftFillerStyle]} />
-                    <View style={[style.current.rightFiller, additionalDataStyles.rightFillerStyle]} />
-                </View>
-            )
-        }
-    }
-
     const _onPress = useCallback(() => {
         onPress?.(dateData);
     }, [onPress]);
@@ -180,6 +162,23 @@ const PeriodDay = (props: PeriodDayProps) => {
     }, [onLongPress]);
 
     const Component = marking ? TouchableWithoutFeedback : TouchableOpacity;
+
+    const additionalDataBorder = useMemo(() => {
+
+        let borderStyle = {}
+        if (additionalMarking) {
+            console.log('hasData', additionalMarking)
+            borderStyle = { borderTopWidth: 2, borderBottomWidth: 2, borderColor: 'green' }
+            if (additionalMarking.startingDay || additionalMarking.weekday == 1) {
+                borderStyle = { ...borderStyle, borderLeftWidth: 2, borderTopLeftRadius: 19, borderBottomLeftRadius: 19 }
+            }
+            if (additionalMarking.endingDay || additionalMarking.weekday == 7) {
+                borderStyle = { ...borderStyle, borderRightWidth: 2, borderTopRightRadius: 19, borderBottomRightRadius: 19 }
+            }
+        }
+
+        return { borderStyle }
+    }, [additionalMarking])
 
     return (
         <Component
@@ -192,13 +191,18 @@ const PeriodDay = (props: PeriodDayProps) => {
             accessibilityLabel={accessibilityLabel}
         >
             <View style={style.current.wrapper}>
+                {/* <View style={{ position: 'absolute', left: -20, right: 0, height: 34, flexDirection: 'row' }}>
+                        <View style={{ borderWidth: 1, borderColor: 'blue', flex: 1 }} />
+                        <View style={{ borderWidth: 1, borderColor: 'red', flex: 1 }} />
+                    </View> */}
                 {renderFillers()}
-                {renderAdditionalDataBorders}
-                <View style={[containerStyle, additionalDataStyles.additionalMarkingStyle]}>
-                    <Text allowFontScaling={false} style={textStyle}>
-                        {String(children)}
-                    </Text>
-                    <Dot theme={theme} color={marking?.dotColor} marked={marking?.marked} />
+                <View style={additionalDataBorder.borderStyle}>
+                    <View style={[containerStyle, /* additionalDataBorder.borderStyle */]}>
+                        <Text allowFontScaling={false} style={textStyle}>
+                            {String(children)}
+                        </Text>
+                        <Dot theme={theme} color={marking?.dotColor} marked={marking?.marked} />
+                    </View>
                 </View>
             </View>
         </Component>

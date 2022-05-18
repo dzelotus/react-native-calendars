@@ -19,6 +19,7 @@ export type CalendarListItemProps = CalendarProps & {
     horizontal?: boolean;
     theme?: Theme;
     scrollToMonth?: (date: XDate) => void;
+    additionalData?: object;
 };
 
 type CalendarListItemState = {

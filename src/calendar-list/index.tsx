@@ -58,6 +58,7 @@ export interface CalendarListProps extends CalendarProps, Omit<FlatListProps<any
     onLayout?: (event: LayoutChangeEvent) => void;
     removeClippedSubviews?: boolean;
     testID?: string;
+    additionalData?: object;
 }
 
 type XDateAndBump = XDate & { propBump?: number };
