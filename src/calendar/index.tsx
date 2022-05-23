@@ -200,16 +200,20 @@ const Calendar = (props: CalendarProps) => {
                 if (hasData.startingDay || hasData.weekday == 1) {
                     borderStyle = { ...borderStyle, borderLeftWidth: 2, borderTopLeftRadius: 19, borderBottomLeftRadius: 19 }
                 }
-                if (hasData.endingDay || hasData.weekday == 7) {
-                    borderStyle = { ...borderStyle, borderRightWidth: 2, borderTopRightRadius: 19, borderBottomRightRadius: 19 }
-                }
+                /*  if (hasData.endingDay || hasData.weekday == 7) {
+                     borderStyle = { ...borderStyle, borderRightWidth: 2, borderTopRightRadius: 19, borderBottomRightRadius: 19 }
+                 } */
             }
 
-            return borderStyle
+            return (
+                <View
+                    style={[borderStyle, { borderWidth: 1, height: 34, position: 'absolute', right: 0, left: 0 }]}
+                />
+            )
         }
 
         return (
-            <View style={[style.current.dayContainer,/*  additionalDataBorder() */]} key={id}>
+            <View style={[style.current.dayContainer]} key={id}>
                 <Day
                     {...dayProps}
                     date={toMarkingFormat(day)}
@@ -219,6 +223,7 @@ const Calendar = (props: CalendarProps) => {
                     onPress={onPressDay}
                     onLongPress={onLongPressDay}
                 />
+                {/* {additionalDataBorder()} */}
             </View>
         );
     };
@@ -235,7 +240,7 @@ const Calendar = (props: CalendarProps) => {
         }
 
         return (
-            <View style={style.current.week} key={id}>
+            <View style={[style.current.week]} key={id}>
                 {week}
             </View>
         );

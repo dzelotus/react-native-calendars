@@ -11,10 +11,10 @@ export default function styleConstructor(theme: Theme = {}) {
             alignItems: 'center',
             alignSelf: 'stretch',
             justifyContent: 'center',
-            marginLeft: -1
+            marginLeft: -1,
         },
         base: {
-            width: 38,
+            width: 34,
             height: FILLER_HEIGHT,
             alignItems: 'center'
         },
