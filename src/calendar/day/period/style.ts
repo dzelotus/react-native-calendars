@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 import * as defaultStyle from '../../../style';
 import { Theme } from '../../../types';
 
-const FILLER_HEIGHT = 34;
+const FILLER_HEIGHT = 38;
 
 export default function styleConstructor(theme: Theme = {}) {
     const appStyle = { ...defaultStyle, ...theme };
@@ -14,7 +14,7 @@ export default function styleConstructor(theme: Theme = {}) {
             marginLeft: -1,
         },
         base: {
-            width: 34,
+            width: 38,
             height: FILLER_HEIGHT,
             alignItems: 'center'
         },

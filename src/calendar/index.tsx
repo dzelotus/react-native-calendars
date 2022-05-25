@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import XDate from 'xdate';
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { View, ViewStyle, StyleProp } from 'react-native';
+import { View, ViewStyle, StyleProp, Text } from 'react-native';
 // @ts-expect-error
 import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
 
@@ -189,28 +189,7 @@ const Calendar = (props: CalendarProps) => {
         }
 
 
-
-        const additionalDataBorder = () => {
-            const hasData = additionalData?.[toMarkingFormat(day)]
-
-            let borderStyle = {}
-            if (hasData) {
-                console.log('hasData', hasData)
-                borderStyle = { borderTopWidth: 2, borderBottomWidth: 2, borderColor: 'green' }
-                if (hasData.startingDay || hasData.weekday == 1) {
-                    borderStyle = { ...borderStyle, borderLeftWidth: 2, borderTopLeftRadius: 19, borderBottomLeftRadius: 19 }
-                }
-                /*  if (hasData.endingDay || hasData.weekday == 7) {
-                     borderStyle = { ...borderStyle, borderRightWidth: 2, borderTopRightRadius: 19, borderBottomRightRadius: 19 }
-                 } */
-            }
-
-            return (
-                <View
-                    style={[borderStyle, { borderWidth: 1, height: 34, position: 'absolute', right: 0, left: 0 }]}
-                />
-            )
-        }
+        const additionalMarking = additionalData.filter(item => { return item?.date == toMarkingFormat(day) })
 
         return (
             <View style={[style.current.dayContainer]} key={id}>
@@ -219,7 +198,7 @@ const Calendar = (props: CalendarProps) => {
                     date={toMarkingFormat(day)}
                     state={getState(day, currentMonth, props)}
                     marking={markedDates?.[toMarkingFormat(day)]}
-                    additionalMarking={additionalData?.[toMarkingFormat(day)]}
+                    additionalMarking={additionalMarking}
                     onPress={onPressDay}
                     onLongPress={onLongPressDay}
                 />
@@ -255,7 +234,7 @@ const Calendar = (props: CalendarProps) => {
             weeks.push(renderWeek(days.splice(0, 7), weeks.length));
         }
 
-        return <View style={style.current.monthView}>{weeks}</View>;
+        return <View style={[style.current.monthView]}>{weeks}</View>;
     };
 
     const renderHeader = () => {

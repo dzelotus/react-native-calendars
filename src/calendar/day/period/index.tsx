@@ -81,7 +81,7 @@ const PeriodDay = (props: PeriodDayProps) => {
 
         if (marking) {
             containerStyle.push({
-                overflow: 'hidden'
+                overflow: 'hidden',
             });
 
             if (markingStyle.containerStyle) {
@@ -91,9 +91,9 @@ const PeriodDay = (props: PeriodDayProps) => {
             const start = markingStyle.startingDay;
             const end = markingStyle.endingDay;
             if (start && !end) {
-                containerStyle.push({ backgroundColor: markingStyle.startingDay?.backgroundColor, borderRadius: 17 });
+                containerStyle.push({ backgroundColor: markingStyle.startingDay?.backgroundColor, borderRadius: 19, width: 38 });
             } else if (end && !start || end && start) {
-                containerStyle.push({ backgroundColor: markingStyle.endingDay?.backgroundColor, borderRadius: 17 });
+                containerStyle.push({ backgroundColor: markingStyle.endingDay?.backgroundColor, borderRadius: 19, width: 38 });
             }
         }
         return containerStyle;
@@ -126,37 +126,46 @@ const PeriodDay = (props: PeriodDayProps) => {
         let dayFillerStyle = {};
 
         if (marking) {
+
             const start = marking.startingDay;
             const end = marking.endingDay
             const monday = marking.weekday == 1
             const sunday = marking.weekday == 7
 
-            fillerStyle = { position: 'absolute', height: 34, width: '100%', left: 0, right: 0, backgroundColor: marking.color }
-            if ((start || monday) && !sunday && !end) {
-                fillerStyle = { ...fillerStyle, borderTopLeftRadius: 17, borderBottomLeftRadius: 17 }
-                rightFillerStyle = {
-                    backgroundColor: '#a1e6ff',
-                    height: 34,
-                    position: 'absolute',
-                    right: 0,
-                    width: '50%'
-                }
-            } else if ((end && !sunday && !start) || (sunday && !start)) {
-                fillerStyle = { ...fillerStyle, borderTopRightRadius: 17, borderBottomRightRadius: 17 }
-                leftFillerStyle = {
-                    backgroundColor: '#a1e6ff',
-                    height: 34,
-                    position: 'absolute',
-                    left: 0,
-                    width: '50%'
-                }
-            } else if (!start) {
+            fillerStyle = { position: 'absolute', height: 38, width: '100%', left: 0, right: 0, backgroundColor: marking.color }
+            if (sunday) {
+                fillerStyle = { ...fillerStyle, borderTopRightRadius: 19, borderBottomRightRadius: 19 }
+            } else if (monday) {
+                fillerStyle = { ...fillerStyle, borderTopLeftRadius: 19, borderBottomLeftRadius: 19 }
+            }
+
+            if (!start && !end && !sunday && !monday) {
                 dayFillerStyle = {
                     backgroundColor: '#a1e6ff',
-                    height: 34,
+                    height: 38,
                     position: 'absolute',
                     left: 0,
                     right: 0,
+                }
+            }
+
+            if ((start && !end) || (monday && !end)) {
+                rightFillerStyle = {
+                    backgroundColor: '#a1e6ff',
+                    height: 38,
+                    position: 'absolute',
+                    right: 0,
+                    width: '50%'
+                }
+            }
+
+            if ((end && !start && !monday) || sunday) {
+                leftFillerStyle = {
+                    backgroundColor: '#a1e6ff',
+                    height: 38,
+                    position: 'absolute',
+                    left: 0,
+                    width: '50%',
                 }
             }
         }
@@ -164,7 +173,7 @@ const PeriodDay = (props: PeriodDayProps) => {
         return { leftFillerStyle, rightFillerStyle, fillerStyle, dayFillerStyle };
     }, [marking])
 
-    const borderStyle = useMemo(() => {
+    const getBorderStyle = (item, index) => {
 
         let leftBorder = {}
         let dayBorder = {}
@@ -173,64 +182,133 @@ const PeriodDay = (props: PeriodDayProps) => {
         let rightFiller = {}
         let leftFiller = {}
 
-        if (additionalMarking) {
-            justBorder = { position: 'absolute', height: 34, width: '100%', left: 0, right: 0 }
-            if (additionalMarking.startingDay || additionalMarking.weekday == 1) {
+        const height = 38
+
+        justBorder = { position: 'absolute', height: height, width: '100%', left: 0, right: 0, }
+        if ((item.startingDay || item.weekday == 1) && !item.endingDay) {
+            leftBorder = {
+                borderTopLeftRadius: 19,
+                borderBottomLeftRadius: 19,
+                borderLeftWidth: 2,
+                borderTopWidth: 2,
+                borderBottomWidth: 2,
+                borderColor: item.color,
+            }
+            rightFiller = {
+                borderTopWidth: 2,
+                borderBottomWidth: 2,
+                borderColor: item.color,
+                height: height,
+                position: 'absolute',
+                right: 0,
+                width: '50%'
+            }
+        } else if ((item.endingDay || item.weekday == 7) && !item.startingDay) {
+            rightBorder = {
+                borderTopRightRadius: 19,
+                borderBottomRightRadius: 19,
+                borderRightWidth: 2,
+                borderTopWidth: 2,
+                borderBottomWidth: 2,
+                borderColor: item.color
+            }
+            leftFiller = {
+                borderTopWidth: 2,
+                borderBottomWidth: 2,
+                borderColor: item.color,
+                height: height,
+                position: 'absolute',
+                left: 0,
+                width: '50%'
+            }
+            if (item.weekday == 1) {
                 leftBorder = {
                     borderTopLeftRadius: 19,
                     borderBottomLeftRadius: 19,
                     borderLeftWidth: 2,
                     borderTopWidth: 2,
                     borderBottomWidth: 2,
-                    borderColor: 'green',
-                }
-                rightFiller = {
-                    borderTopWidth: 2,
-                    borderBottomWidth: 2,
-                    borderColor: 'green',
-                    height: 34,
-                    position: 'absolute',
-                    right: 0,
-                    width: '50%'
-                }
-            } else if (additionalMarking.endingDay || additionalMarking.weekday == 7) {
-                rightBorder = {
-                    borderTopRightRadius: 19,
-                    borderBottomRightRadius: 19,
-                    borderRightWidth: 2,
-                    borderTopWidth: 2,
-                    borderBottomWidth: 2,
-                    borderColor: 'green'
+                    borderColor: item.color,
                 }
                 leftFiller = {
-                    borderTopWidth: 2,
-                    borderBottomWidth: 2,
-                    borderColor: 'green',
-                    height: 34,
-                    position: 'absolute',
-                    left: 0,
-                    width: '50%'
+
                 }
-            } else {
-                dayBorder = {
-                    borderTopWidth: 2,
-                    borderBottomWidth: 2,
-                    borderColor: 'green',
-                    position: 'absolute',
-                    width: '100%',
-                    left: 0,
-                    right: 0,
-                    height: 34
-                }
+            }
+        } else if (item.startingDay && item.endingDay) {
+            justBorder = {
+                borderWidth: 2,
+                borderRadius: 19,
+                borderColor: item.color,
+                position: 'absolute',
+                width: '100%',
+                left: 0,
+                right: 0,
+                height: height,
+            }
+        } else if (item.endingDay && item.weekday == 1) {
+            console.log('ITEM', item)
+            leftBorder = {
+                borderTopLeftRadius: 19,
+                borderBottomLeftRadius: 19,
+                borderLeftWidth: 2,
+                borderTopWidth: 2,
+                borderBottomWidth: 2,
+                borderColor: item.color,
+            }
+        } else {
+            dayBorder = {
+                borderTopWidth: 2,
+                borderBottomWidth: 2,
+                borderColor: item.color,
+                position: 'absolute',
+                width: '100%',
+                left: 0,
+                right: 0,
+                height: height,
             }
         }
 
+
+
         return { leftBorder, rightBorder, dayBorder, justBorder, rightFiller, leftFiller }
 
-    }, [additionalMarking])
+    }
+
+    const additionalDataBorder = () => {
+        if (additionalMarking.length > 0) {
+            return additionalMarking.map((item, index) => {
+                const borderStyle = getBorderStyle(item, index)
+                return (
+                    <View style={[
+                        borderStyle.justBorder,
+                        borderStyle.leftBorder,
+                        borderStyle.rightBorder,
+                        borderStyle.dayBorder,
+                    ]}
+                    />
+                )
+            })
+        }
+    }
+
+    const additionalDataBorderFillers = () => {
+        if (additionalMarking.length > 0) {
+            return additionalMarking.map((item, index) => {
+                const borderStyle = getBorderStyle(item, index)
+                return (
+                    <View style={[
+                        borderStyle.rightFiller,
+                        borderStyle.leftFiller,
+                        borderStyle.dayBorder,
+                        { zIndex: 5 }
+                    ]}
+                    />
+                )
+            })
+        }
+    }
 
     const _onPress = useCallback(() => {
-        console.log('PRESS')
         onPress?.(dateData);
     }, [onPress]);
 
@@ -253,15 +331,22 @@ const PeriodDay = (props: PeriodDayProps) => {
         >
             <View style={[style.current.wrapper]}>
 
-                <View
+                {/* <View
                     style={[borderStyle.rightFiller, borderStyle.leftFiller, borderStyle.dayBorder, { zIndex: 5 }]}
-                />
+                /> */}
+
+                {
+                    additionalDataBorderFillers()
+                }
                 <View
                     style={[fillerStyles.rightFillerStyle, fillerStyles.leftFillerStyle, fillerStyles.dayFillerStyle]}
                 />
-                <View style={[containerStyle]}>
+                <View style={[containerStyle, { height: 38, width: 38, justifyContent: 'center' }]}>
                     <View style={[fillerStyles.fillerStyle]} />
-                    <View style={[borderStyle.justBorder, borderStyle.leftBorder, borderStyle.rightBorder]} />
+                    {
+                        additionalDataBorder()
+                    }
+                    {/* <View style={[borderStyle.justBorder, borderStyle.leftBorder, borderStyle.rightBorder]} /> */}
                     <Text allowFontScaling={false} style={textStyle}>
                         {String(children)}
                     </Text>
