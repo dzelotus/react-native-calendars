@@ -181,18 +181,48 @@ const Calendar = (props: CalendarProps) => {
         );
     };
 
+
     const renderDay = (day: XDate, id: number) => {
         const dayProps = extractComponentProps(Day, props);
 
         if (!sameMonth(day, currentMonth) && hideExtraDays) {
             return <View key={id} style={style.current.emptyDayContainer} />;
         }
+        const flattenAdditionalDataArray = additionalData.flat()
+        const additionalMarking = flattenAdditionalDataArray.filter(item => { return item?.date == toMarkingFormat(day) })
 
+        const renderTitle = () => {
+            return additionalData.map(item => {
 
-        const additionalMarking = additionalData.filter(item => { return item?.date == toMarkingFormat(day) })
+                let title;
+                if (item[0].title.title == 'businessTrip') {
+                    title = 'командировка'
+                } else {
+                    title = 'отпуск'
+                }
+
+                const isNeeded = item.some(item => {
+                    return item.date == toMarkingFormat(day)
+                })
+
+                console.log('additionalData', isNeeded)
+                if (isNeeded) {
+                    return (
+                        <View style={[{ position: 'absolute', width: 100, left: 0, top: -19 }]}>
+                            <Text style={[item[0].title.titleStyle, { fontSize: 10 }]}>{title}</Text>
+                        </View>
+                    )
+                }
+
+            })
+
+        }
 
         return (
             <View style={[style.current.dayContainer]} key={id}>
+                {
+                    additionalMarking[0]?.title && renderTitle()
+                }
                 <Day
                     {...dayProps}
                     date={toMarkingFormat(day)}
@@ -208,6 +238,8 @@ const Calendar = (props: CalendarProps) => {
     };
 
     const renderWeek = (days: XDate[], id: number) => {
+
+        /* console.log('ADD', additionalData) */
         const week = [];
 
         days.forEach((day: XDate, id2: number) => {
@@ -217,6 +249,8 @@ const Calendar = (props: CalendarProps) => {
         if (props.showWeekNumbers) {
             week.unshift(renderWeekNumber(days[days.length - 1].getWeek()));
         }
+
+
 
         return (
             <View style={[style.current.week]} key={id}>
@@ -233,7 +267,6 @@ const Calendar = (props: CalendarProps) => {
         while (days.length) {
             weeks.push(renderWeek(days.splice(0, 7), weeks.length));
         }
-
         return <View style={[style.current.monthView]}>{weeks}</View>;
     };
 

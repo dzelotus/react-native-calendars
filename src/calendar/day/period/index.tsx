@@ -203,7 +203,20 @@ const PeriodDay = (props: PeriodDayProps) => {
                 right: 0,
                 width: '50%'
             }
-        } else if ((item.endingDay || item.weekday == 7) && !item.startingDay) {
+            if (item.weekday == 7) {
+                rightBorder = {
+                    borderTopRightRadius: 19,
+                    borderBottomRightRadius: 19,
+                    borderRightWidth: 2,
+                    borderTopWidth: 2,
+                    borderBottomWidth: 2,
+                    borderColor: item.color
+                }
+                rightFiller = {
+
+                }
+            }
+        } else if ((item.endingDay || item.weekday == 7 || (item.startingDay && item.weekday == 7)) && !item.startingDay) {
             rightBorder = {
                 borderTopRightRadius: 19,
                 borderBottomRightRadius: 19,
@@ -308,6 +321,35 @@ const PeriodDay = (props: PeriodDayProps) => {
         }
     }
 
+    const renderTitle = () => {
+        console.log('ADADADADADEADAD', additionalMarking)
+
+        /*  return additionalData.map(item => {
+ 
+             let title;
+             if (item[0].title.title == 'businessTrip') {
+                 title = 'командировка'
+             } else {
+                 title = 'отпуск'
+             }
+ 
+             const isNeeded = item.some(item => {
+                 return item.date == toMarkingFormat(day)
+             })
+ 
+             console.log('additionalData', isNeeded)
+             if (isNeeded) {
+                 return (
+                     <View style={[{ position: 'absolute', width: 100, left: 0, top: -19 }]}>
+                         <Text style={[item[0].title.titleStyle, { fontSize: 10 }]}>{title}</Text>
+                     </View>
+                 )
+             }
+ 
+         }) */
+
+    }
+
     const _onPress = useCallback(() => {
         onPress?.(dateData);
     }, [onPress]);
@@ -330,7 +372,9 @@ const PeriodDay = (props: PeriodDayProps) => {
             style={{ width: '100%' }}
         >
             <View style={[style.current.wrapper]}>
-
+                {
+                    renderTitle()
+                }
                 {/* <View
                     style={[borderStyle.rightFiller, borderStyle.leftFiller, borderStyle.dayBorder, { zIndex: 5 }]}
                 /> */}
