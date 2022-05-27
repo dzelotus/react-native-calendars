@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import XDate from 'xdate';
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { View, ViewStyle, StyleProp, Text } from 'react-native';
+import { View, ViewStyle, StyleProp, Text, Dimensions } from 'react-native';
 // @ts-expect-error
 import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
 
@@ -83,6 +83,8 @@ const Calendar = (props: CalendarProps) => {
     const style = useRef(styleConstructor(theme));
     const header = useRef();
     const isMounted = useRef(false);
+
+    const screenWidth = Dimensions.get('window').width
 
 
     useEffect(() => {
@@ -192,24 +194,42 @@ const Calendar = (props: CalendarProps) => {
         const additionalMarking = flattenAdditionalDataArray.filter(item => { return item?.date == toMarkingFormat(day) })
 
         const renderTitle = () => {
+            const cellWidth = (screenWidth - 30) / 7
+
             return additionalData.map(item => {
+                const startDayNum = item[0]?.date.slice(8)
+                const lastDayOfMonth = item[0].endOfMonth.slice(8)
 
                 let title;
+                let multiplier = 1
+                if (item[0].weekday == 7 || item.length == 1) {
+                    multiplier = 1
+                } else if (item.length < 7) {
+                    multiplier = item.length
+                } else if (item[0].weekday !== 7 || item[0].weekday !== 1) {
+                    multiplier = 7 - item[0].weekday + 1
+                    if ((lastDayOfMonth - startDayNum) < multiplier) {
+                        multiplier = lastDayOfMonth - startDayNum + 1
+                    }
+                }
+
                 if (item[0].title.title == 'businessTrip') {
                     title = 'командировка'
+                    if (multiplier < 2) {
+                        title = title.slice(0, 6) + '.'
+                    }
                 } else {
                     title = 'отпуск'
                 }
 
-                const isNeeded = item.some(item => {
+                const showTitle = item.some(item => {
                     return item.date == toMarkingFormat(day)
                 })
 
-                console.log('additionalData', isNeeded)
-                if (isNeeded) {
+                if (showTitle) {
                     return (
-                        <View style={[{ position: 'absolute', width: 100, left: 0, top: -19 }]}>
-                            <Text style={[item[0].title.titleStyle, { fontSize: 10 }]}>{title}</Text>
+                        <View style={[{ position: 'absolute', width: cellWidth * multiplier, left: 0, top: -19 }]}>
+                            <Text style={[item[0].title.titleStyle, { fontSize: 10, textAlign: 'center' }]}>{title}</Text>
                         </View>
                     )
                 }

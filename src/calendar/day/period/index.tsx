@@ -114,6 +114,9 @@ const PeriodDay = (props: PeriodDayProps) => {
             if (markingStyle.textStyle) {
                 textStyle.push(markingStyle.textStyle);
             }
+            if (marking.today) {
+                textStyle.push({ color: marking.textColor })
+            }
         }
 
         return textStyle;
@@ -131,15 +134,21 @@ const PeriodDay = (props: PeriodDayProps) => {
             const end = marking.endingDay
             const monday = marking.weekday == 1
             const sunday = marking.weekday == 7
+            const endOfMonth = marking.endOfMonth == date
+            const startOfNextMonth = marking.startOfNextMonth == date
+            const selected = marking.selected
+
+            console.log('mark', marking)
 
             fillerStyle = { position: 'absolute', height: 38, width: '100%', left: 0, right: 0, backgroundColor: marking.color }
-            if (sunday) {
+
+            if (sunday || endOfMonth) {
                 fillerStyle = { ...fillerStyle, borderTopRightRadius: 19, borderBottomRightRadius: 19 }
-            } else if (monday) {
+            } else if (monday || startOfNextMonth) {
                 fillerStyle = { ...fillerStyle, borderTopLeftRadius: 19, borderBottomLeftRadius: 19 }
             }
 
-            if (!start && !end && !sunday && !monday) {
+            if (!start && !end && !sunday && !monday && !endOfMonth && !startOfNextMonth && selected) {
                 dayFillerStyle = {
                     backgroundColor: '#a1e6ff',
                     height: 38,
@@ -149,7 +158,8 @@ const PeriodDay = (props: PeriodDayProps) => {
                 }
             }
 
-            if ((start && !end) || (monday && !end)) {
+            if ((start && !end && !sunday && !endOfMonth) || (monday && !end) || (startOfNextMonth && !end)) {
+
                 rightFillerStyle = {
                     backgroundColor: '#a1e6ff',
                     height: 38,
@@ -159,7 +169,7 @@ const PeriodDay = (props: PeriodDayProps) => {
                 }
             }
 
-            if ((end && !start && !monday) || sunday) {
+            if ((end && !start && !monday && !startOfNextMonth) || (sunday && !start) || (endOfMonth && !start)) {
                 leftFillerStyle = {
                     backgroundColor: '#a1e6ff',
                     height: 38,
@@ -185,7 +195,8 @@ const PeriodDay = (props: PeriodDayProps) => {
         const height = 38
 
         justBorder = { position: 'absolute', height: height, width: '100%', left: 0, right: 0, }
-        if ((item.startingDay || item.weekday == 1) && !item.endingDay) {
+        if ((item.startingDay || item.weekday == 1 || item.date == item.startOfNextMonth) && !item.endingDay) {
+
             leftBorder = {
                 borderTopLeftRadius: 19,
                 borderBottomLeftRadius: 19,
@@ -216,7 +227,7 @@ const PeriodDay = (props: PeriodDayProps) => {
 
                 }
             }
-        } else if ((item.endingDay || item.weekday == 7 || (item.startingDay && item.weekday == 7)) && !item.startingDay) {
+        } else if ((item.endingDay || item.weekday == 7 || (item.startingDay && item.weekday == 7) || item.date == item.endOfMonth) && !item.startingDay) {
             rightBorder = {
                 borderTopRightRadius: 19,
                 borderBottomRightRadius: 19,
@@ -321,35 +332,6 @@ const PeriodDay = (props: PeriodDayProps) => {
         }
     }
 
-    const renderTitle = () => {
-        console.log('ADADADADADEADAD', additionalMarking)
-
-        /*  return additionalData.map(item => {
- 
-             let title;
-             if (item[0].title.title == 'businessTrip') {
-                 title = 'командировка'
-             } else {
-                 title = 'отпуск'
-             }
- 
-             const isNeeded = item.some(item => {
-                 return item.date == toMarkingFormat(day)
-             })
- 
-             console.log('additionalData', isNeeded)
-             if (isNeeded) {
-                 return (
-                     <View style={[{ position: 'absolute', width: 100, left: 0, top: -19 }]}>
-                         <Text style={[item[0].title.titleStyle, { fontSize: 10 }]}>{title}</Text>
-                     </View>
-                 )
-             }
- 
-         }) */
-
-    }
-
     const _onPress = useCallback(() => {
         onPress?.(dateData);
     }, [onPress]);
@@ -372,12 +354,6 @@ const PeriodDay = (props: PeriodDayProps) => {
             style={{ width: '100%' }}
         >
             <View style={[style.current.wrapper]}>
-                {
-                    renderTitle()
-                }
-                {/* <View
-                    style={[borderStyle.rightFiller, borderStyle.leftFiller, borderStyle.dayBorder, { zIndex: 5 }]}
-                /> */}
 
                 {
                     additionalDataBorderFillers()
@@ -390,7 +366,6 @@ const PeriodDay = (props: PeriodDayProps) => {
                     {
                         additionalDataBorder()
                     }
-                    {/* <View style={[borderStyle.justBorder, borderStyle.leftBorder, borderStyle.rightBorder]} /> */}
                     <Text allowFontScaling={false} style={textStyle}>
                         {String(children)}
                     </Text>
