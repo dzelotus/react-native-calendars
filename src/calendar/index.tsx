@@ -213,13 +213,12 @@ const Calendar = (props: CalendarProps) => {
                     }
                 }
 
-                if (item[0].title.title == 'businessTrip') {
-                    title = 'командировка'
+                if (item[0].title.title) {
                     if (multiplier < 2) {
-                        title = title.slice(0, 6) + '.'
+                        title = item[0].title.title.slice(0, 6) + '.'
+                    } else {
+                        title = item[0].title.title
                     }
-                } else {
-                    title = 'отпуск'
                 }
 
                 const showTitle = item.some(item => {
@@ -252,14 +251,11 @@ const Calendar = (props: CalendarProps) => {
                     onPress={onPressDay}
                     onLongPress={onLongPressDay}
                 />
-                {/* {additionalDataBorder()} */}
             </View>
         );
     };
 
     const renderWeek = (days: XDate[], id: number) => {
-
-        /* console.log('ADD', additionalData) */
         const week = [];
 
         days.forEach((day: XDate, id2: number) => {

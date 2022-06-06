@@ -138,8 +138,6 @@ const PeriodDay = (props: PeriodDayProps) => {
             const startOfNextMonth = marking.startOfNextMonth == date
             const selected = marking.selected
 
-            console.log('mark', marking)
-
             fillerStyle = { position: 'absolute', height: 38, width: '100%', left: 0, right: 0, backgroundColor: marking.color }
 
             if (sunday || endOfMonth) {
@@ -184,7 +182,6 @@ const PeriodDay = (props: PeriodDayProps) => {
     }, [marking])
 
     const getBorderStyle = (item, index) => {
-
         let leftBorder = {}
         let dayBorder = {}
         let rightBorder = {}
@@ -194,21 +191,24 @@ const PeriodDay = (props: PeriodDayProps) => {
 
         const height = 38
 
+        const borderColor = item.border.color
+        const borderWidth = item.border.width
+
+
         justBorder = { position: 'absolute', height: height, width: '100%', left: 0, right: 0, }
         if ((item.startingDay || item.weekday == 1 || item.date == item.startOfNextMonth) && !item.endingDay) {
-
             leftBorder = {
                 borderTopLeftRadius: 19,
                 borderBottomLeftRadius: 19,
-                borderLeftWidth: 2,
-                borderTopWidth: 2,
-                borderBottomWidth: 2,
-                borderColor: item.color,
+                borderLeftWidth: borderWidth,
+                borderTopWidth: borderWidth,
+                borderBottomWidth: borderWidth,
+                borderColor: borderColor,
             }
             rightFiller = {
-                borderTopWidth: 2,
-                borderBottomWidth: 2,
-                borderColor: item.color,
+                borderTopWidth: borderWidth,
+                borderBottomWidth: borderWidth,
+                borderColor: borderColor,
                 height: height,
                 position: 'absolute',
                 right: 0,
@@ -218,10 +218,10 @@ const PeriodDay = (props: PeriodDayProps) => {
                 rightBorder = {
                     borderTopRightRadius: 19,
                     borderBottomRightRadius: 19,
-                    borderRightWidth: 2,
-                    borderTopWidth: 2,
-                    borderBottomWidth: 2,
-                    borderColor: item.color
+                    borderRightWidth: borderWidth,
+                    borderTopWidth: borderWidth,
+                    borderBottomWidth: borderWidth,
+                    borderColor: borderColor
                 }
                 rightFiller = {
 
@@ -231,15 +231,15 @@ const PeriodDay = (props: PeriodDayProps) => {
             rightBorder = {
                 borderTopRightRadius: 19,
                 borderBottomRightRadius: 19,
-                borderRightWidth: 2,
-                borderTopWidth: 2,
-                borderBottomWidth: 2,
-                borderColor: item.color
+                borderRightWidth: borderWidth,
+                borderTopWidth: borderWidth,
+                borderBottomWidth: borderWidth,
+                borderColor: borderColor
             }
             leftFiller = {
-                borderTopWidth: 2,
-                borderBottomWidth: 2,
-                borderColor: item.color,
+                borderTopWidth: borderWidth,
+                borderBottomWidth: borderWidth,
+                borderColor: borderColor,
                 height: height,
                 position: 'absolute',
                 left: 0,
@@ -249,10 +249,10 @@ const PeriodDay = (props: PeriodDayProps) => {
                 leftBorder = {
                     borderTopLeftRadius: 19,
                     borderBottomLeftRadius: 19,
-                    borderLeftWidth: 2,
-                    borderTopWidth: 2,
-                    borderBottomWidth: 2,
-                    borderColor: item.color,
+                    borderLeftWidth: borderWidth,
+                    borderTopWidth: borderWidth,
+                    borderBottomWidth: borderWidth,
+                    borderColor: borderColor,
                 }
                 leftFiller = {
 
@@ -260,9 +260,9 @@ const PeriodDay = (props: PeriodDayProps) => {
             }
         } else if (item.startingDay && item.endingDay) {
             justBorder = {
-                borderWidth: 2,
+                borderWidth: borderWidth,
                 borderRadius: 19,
-                borderColor: item.color,
+                borderColor: borderColor,
                 position: 'absolute',
                 width: '100%',
                 left: 0,
@@ -270,20 +270,19 @@ const PeriodDay = (props: PeriodDayProps) => {
                 height: height,
             }
         } else if (item.endingDay && item.weekday == 1) {
-            console.log('ITEM', item)
             leftBorder = {
                 borderTopLeftRadius: 19,
                 borderBottomLeftRadius: 19,
-                borderLeftWidth: 2,
-                borderTopWidth: 2,
-                borderBottomWidth: 2,
-                borderColor: item.color,
+                borderLeftWidth: borderWidth,
+                borderTopWidth: borderWidth,
+                borderBottomWidth: borderWidth,
+                borderColor: borderColor,
             }
         } else {
             dayBorder = {
-                borderTopWidth: 2,
-                borderBottomWidth: 2,
-                borderColor: item.color,
+                borderTopWidth: borderWidth,
+                borderBottomWidth: borderWidth,
+                borderColor: borderColor,
                 position: 'absolute',
                 width: '100%',
                 left: 0,
@@ -292,22 +291,46 @@ const PeriodDay = (props: PeriodDayProps) => {
             }
         }
 
-
-
         return { leftBorder, rightBorder, dayBorder, justBorder, rightFiller, leftFiller }
+    }
 
+    const getBackgroundStyle = (item, index) => {
+        const firstLastDayBackgroundColor = item.background.firstLastDayBackgroundColor
+        const backgroundColor = item.background.backgroundColor
+
+        let dayBackground = {}
+        let firstLastDayBackground = {}
+
+        if (item.background.backgroundColor) {
+            dayBackground = {
+                backgroundColor: backgroundColor,
+            }
+
+        }
+
+        if (item.startingDay || item.endingDay) {
+            firstLastDayBackground = {
+                backgroundColor: firstLastDayBackgroundColor,
+                borderRadius: 19
+            }
+        }
+
+        return { dayBackground, firstLastDayBackground }
     }
 
     const additionalDataBorder = () => {
         if (additionalMarking.length > 0) {
             return additionalMarking.map((item, index) => {
                 const borderStyle = getBorderStyle(item, index)
+                const backgroundStyle = getBackgroundStyle(item, index)
                 return (
                     <View style={[
                         borderStyle.justBorder,
                         borderStyle.leftBorder,
                         borderStyle.rightBorder,
                         borderStyle.dayBorder,
+                        backgroundStyle.dayBackground,
+                        backgroundStyle.firstLastDayBackground
                     ]}
                     />
                 )
@@ -319,12 +342,15 @@ const PeriodDay = (props: PeriodDayProps) => {
         if (additionalMarking.length > 0) {
             return additionalMarking.map((item, index) => {
                 const borderStyle = getBorderStyle(item, index)
+                const backgroundStyle = getBackgroundStyle(item, index)
+                const zIndex = item.background.backgroundColor ? 0 : 5
                 return (
                     <View style={[
                         borderStyle.rightFiller,
                         borderStyle.leftFiller,
                         borderStyle.dayBorder,
-                        { zIndex: 5 }
+                        backgroundStyle.dayBackground,
+                        { zIndex: zIndex }
                     ]}
                     />
                 )
@@ -374,20 +400,6 @@ const PeriodDay = (props: PeriodDayProps) => {
             </View>
         </Component>
     );
-    /* return (
-        <View style={{ borderColor: 'red', borderWidth: 2, width: '100%', alignContent: 'center', alignItems: 'center' }}>
-            <TouchableOpacity
-                onPress={_onPress}
-                onLongPress={_onLongPress}
-            >
-                <View>
-                    <Text>
-                        {String(children)}
-                    </Text>
-                </View>
-            </TouchableOpacity>
-        </View>
-    ) */
 };
 
 export default PeriodDay;
