@@ -308,7 +308,7 @@ const PeriodDay = (props: PeriodDayProps) => {
 
         }
 
-        if (item.startingDay || item.endingDay) {
+        if ((item.startingDay || item.endingDay) && backgroundColor) {
             firstLastDayBackground = {
                 backgroundColor: firstLastDayBackgroundColor,
                 borderRadius: 19
