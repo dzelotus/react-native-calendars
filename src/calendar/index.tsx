@@ -190,7 +190,8 @@ const Calendar = (props: CalendarProps) => {
         if (!sameMonth(day, currentMonth) && hideExtraDays) {
             return <View key={id} style={style.current.emptyDayContainer} />;
         }
-        const flattenAdditionalDataArray = additionalData.flat()
+
+        const flattenAdditionalDataArray = additionalData ? additionalData.flat() : []
         const additionalMarking = flattenAdditionalDataArray.filter(item => { return item?.date == toMarkingFormat(day) })
 
         const renderTitle = () => {
